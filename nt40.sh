@@ -7,6 +7,10 @@
 set -ex
 cd "${0%/*}"
 
+if ! test -f nt40.img && test -f nt40.img.xz; then
+  xzdec <nt40.img.xz >nt40.img.tmp || xz -cd <nt40.img.xz >nt40.img.tmp
+  mv nt40.img.tmp nt40.img
+fi
 if ! test -f nt40.img; then
   if ! test -f nt40.iso; then
     set -ex

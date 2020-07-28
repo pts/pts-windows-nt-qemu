@@ -7,6 +7,10 @@
 set -ex
 cd "${0%/*}"
 
+if ! test -f nt35.img && test -f nt35.img.xz; then
+  xzdec <nt35.img.xz >nt35.img.tmp || xz -cd <nt35.img.xz >nt35.img.tmp
+  mv nt35.img.tmp nt35.img
+fi
 if ! test -f nt35.img; then
   if ! test -f nt35.cd/I386/WINNT.EXE; then
     test -d nt35.cd || mkdir nt35.cd
