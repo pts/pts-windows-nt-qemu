@@ -95,4 +95,7 @@ What makes it complicated to install Windows NT within QEMU:
   this by preparing a HDD image of size 140 MiB (small enough) with a FAT16
   filesystem, for maximum compatibility.
 
+TODO(pts): Provide instructions for copying files between the host Linux and
+the guest Windows NT system.
+
 __END__
