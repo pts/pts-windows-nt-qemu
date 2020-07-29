@@ -89,6 +89,10 @@ elif test -f floppy.img; then FDARGS='-drive file=floppy.img,format=raw,if=flopp
 else FDARGS=''
 fi
 
-qemu-system-i386 -L pc -cpu 486 -m 64 -vga cirrus -drive file=nt35.img,format=raw -net nic,model=pcnet -net user -soundhw sb16,pcspk $FDARGS
+if test -d drived; then DDARGS='-drive file=fat:rw:drived,format=raw'
+else DDARGS=
+fi
+
+qemu-system-i386 -L pc -cpu 486 -m 64 -vga cirrus -drive file=nt35.img,format=raw -net nic,model=pcnet -net user -soundhw sb16,pcspk $FDARGS $DDARGS
 
 : "$0" OK.

@@ -96,20 +96,40 @@ To copy small files between the Windows NT and the host, use floppy images:
     $ mtools -c mmd -i floppy.img ::MYDIR
     $ mtools -c mcopy -i floppy.img MY* ::MYDIR/
 
+How to use a large amount of files (up to 512 MB) on the host within the
+Windows NT guest:
+
+* Create the directory `drived' on the host (next to nt*.sh), and put the
+  files and subdirectories there. The contents of `drived' will be available
+  for reading as drive D: for the Windows NT guests. This is implemented by
+  the QEMU VVFAT filesystem.
+
+* Maximum capacity of QEMU VVFAT is 512 MiB. If there are too many top-level
+  directories in `drived', move some of them to subdirectorie.
+
+* Windows NT 3.1 (but not newer versions) can also write to `drived' via D:.
+  Changes will be available in `drived' within a second. Please don't write
+  to `drived' from the host while the guest is running. Changes won't show
+  up, and QEMU may get confused.
+
+* If you need to write files in both directions, use a floppy image (A:,
+  floppy.img) instead, see above how.
+
 Feature matrix (without any service packs or updates):
 
-  Windows NT version            3.1   3.5   3.51   4.0
-  -------------------------------------------------------
-  maximum floppy size (KiB)     2880  4320  4320   4320
-  NTFS filesystem               yes   yes   yes    yes
-  FAT12 and FAT16 filesystems   yes   yes   yes    yes
-  FAT32 filesystem              --    --    --     --
-  long filenames on FAT         --    yes   yes    yes
-  can run subsystem 4.0 .exe    --    yes   yes    yes
-  TCP/IP networking             --    yes   yes    yes
-  AMD PCnet driver built in     --    --    yes    yes
-  installer can boot from CD    --    --    --     yes
-  software shutdown with ACPI   --    --    --     --
+  Windows NT version            3.1   3.5   3.51  4.0
+  ------------------------------------------------------
+  maximum floppy size (KiB)     2880  4320  4320  4320
+  write to QEMU VVFAT drive D:  yes   --    --    --
+  NTFS filesystem               yes   yes   yes   yes
+  FAT12 and FAT16 filesystems   yes   yes   yes   yes
+  FAT32 filesystem              --    --    --    --
+  long filenames on FAT         --    yes   yes   yes
+  can run subsystem 4.0 .exe    --    yes   yes   yes
+  TCP/IP networking             --    yes   yes   yes
+  AMD PCnet driver built in     --    --    yes   yes
+  installer can boot from CD    --    --    --    yes
+  software shutdown with ACPI   --    --    --    --
 
 What makes it complicated to install Windows NT within QEMU:
 
@@ -131,8 +151,5 @@ What makes it complicated to install Windows NT within QEMU:
 * Windows NT doesn't work with too large disks. pts-windows-nt-qemu solves
   this by preparing a HDD image of size 140 MiB (small enough) with a FAT16
   filesystem, for maximum compatibility.
-
-TODO(pts): Provide instructions for copying files between the host Linux and
-the guest Windows NT system.
 
 __END__
