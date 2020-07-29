@@ -16,6 +16,8 @@ for NTD in "$@"; do
   # (cd "$NTD".rec && 7z x ../"$NTD".img.bak) || exit "$?"
   mtools -c mcopy -i "$NTD".img.bak@@32256 -s :: "$NTD".rec
   rm -f $(find "$NTD".rec -iname temppf.sys)
+  # Upon first boot, Windows NT will create PAGEFILE.SYS of 2 MiB.
+  rm -f $(find "$NTD".rec -maxdepth 1 -iname pagefile.sys)
   dd if=/dev/zero of="$NTD".img bs=1M count=140
   gzip -cd <fat16hd.img.gz >"$NTD".fat16hd.img
   dd if="$NTD".fat16hd.img of="$NTD".img bs=8K conv=notrunc  # 140 MiB, 1 partition.
