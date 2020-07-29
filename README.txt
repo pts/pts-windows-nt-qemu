@@ -65,14 +65,51 @@ How to use:
    echo replies), but try this command instead: telnet github.com 22; on
    success, it prints a line starting with SSH-2.0- .
 
-Feature matrix:
+To copy small files between the Windows NT and the host, use floppy images:
 
-  Windows NT version          3.1   3.5   3.51   4.0
-  -----------------------------------------------------
-  can run subsystem 4.0 .exe  no    yes   yes    yes
-  TCP/IP networking           no    yes   yes    yes
-  AMD PCnet driver built in   no    no    yes    yes
-  installer can boot from CD  no    no    no     yes
+* Use `./nt40.sh format-floppy' (or the corresponding other nt*.sh script) to
+  create an empty floppy.img file of maximum size.
+
+* Before starting the virtual machine, copy files to the image:
+
+    $ mtools -c mcopy -i floppy.img MYFILE ::
+
+* Start the virtual machine as usual, e.g. `./nt40.sh'.
+
+* Within the virtual machine, use the A: drive to read and write files.
+
+* After a few seconds of writing them, files automatically show up in the
+  host, copy them like this:
+
+    $ mtools -c mcopy -i floppy.img ::MYFILE ./
+
+* To make files show up in the virtual machine without rebooting the virtual
+  machine, first copy the files to floppy.img using mcopy (as above), then
+  in the monitor tab of QEMU (Ctrl-Alt-<2>), run this command (without the
+  (qemu) prefix):
+
+    (qemu) change floppy0 floppy.img
+
+* There is a default limit of 24 files in the root directory of the floppy.img.
+  To create more files, create a directory, and copy the files there:
+
+    $ mtools -c mmd -i floppy.img ::MYDIR
+    $ mtools -c mcopy -i floppy.img MY* ::MYDIR/
+
+Feature matrix (without any service packs or updates):
+
+  Windows NT version            3.1   3.5   3.51   4.0
+  -------------------------------------------------------
+  maximum floppy size (KiB)     2880  4320  4320   4320
+  NTFS filesystem               yes   yes   yes    yes
+  FAT12 and FAT16 filesystems   yes   yes   yes    yes
+  FAT32 filesystem              --    --    --     --
+  long filenames on FAT         --    yes   yes    yes
+  can run subsystem 4.0 .exe    --    yes   yes    yes
+  TCP/IP networking             --    yes   yes    yes
+  AMD PCnet driver built in     --    --    yes    yes
+  installer can boot from CD    --    --    --     yes
+  software shutdown with ACPI   --    --    --     --
 
 What makes it complicated to install Windows NT within QEMU:
 

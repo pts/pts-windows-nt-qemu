@@ -7,6 +7,12 @@
 set -ex
 cd "${0%/*}"
 
+if test "$1" = format-floppy; then
+  dd if=/dev/zero bs=81920 count=54 of=floppy.img
+  mtools -c mformat -i floppy.img -h 2 -s 54 -d 1 -t 80
+  exit
+fi
+
 if ! test -f nt35.img && test -f nt35.img.xz; then
   xzdec <nt35.img.xz >nt35.img.tmp || xz -cd <nt35.img.xz >nt35.img.tmp
   mv nt35.img.tmp nt35.img
@@ -78,6 +84,11 @@ EOF
   mv nt35.img.tmp nt35.img
 fi
 
-qemu-system-i386 -L pc -cpu 486 -m 64 -vga cirrus -drive file=nt35.img,format=raw -net nic,model=pcnet -net user -soundhw sb16,pcspk
+if test -f nt35.floppy.img; then FDARGS='-drive file=nt35.floppy.img,format=raw,if=floppy'
+elif test -f floppy.img; then FDARGS='-drive file=floppy.img,format=raw,if=floppy'
+else FDARGS=''
+fi
+
+qemu-system-i386 -L pc -cpu 486 -m 64 -vga cirrus -drive file=nt35.img,format=raw -net nic,model=pcnet -net user -soundhw sb16,pcspk $FDARGS
 
 : "$0" OK.

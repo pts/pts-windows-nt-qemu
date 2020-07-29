@@ -7,6 +7,13 @@
 set -ex
 cd "${0%/*}"
 
+if test "$1" = format-floppy; then
+  # Maximum floppy size for Windows NT 3.1 is 2880 KiB.
+  dd if=/dev/zero bs=81920 count=36 of=floppy.img
+  mtools -c mformat -i floppy.img -h 2 -s 36 -d 1 -t 80
+  exit
+fi
+
 if ! test -f nt31.img && test -f nt31.img.xz; then
   xzdec <nt31.img.xz >nt31.img.tmp || xz -cd <nt31.img.xz >nt31.img.tmp
   mv nt31.img.tmp nt31.img
@@ -62,6 +69,11 @@ EOF
   mv nt31.img.tmp nt31.img
 fi
 
-qemu-system-i386 -L pc -cpu 486 -m 64 -vga cirrus -drive file=nt31.img,format=raw -net nic,model=pcnet -net user -soundhw sb16,pcspk
+if test -f nt31.floppy.img; then FDARGS='-drive file=nt31.floppy.img,format=raw,if=floppy'
+elif test -f floppy.img; then FDARGS='-drive file=floppy.img,format=raw,if=floppy'
+else FDARGS=''
+fi
+
+qemu-system-i386 -L pc -cpu 486 -m 64 -vga cirrus -drive file=nt31.img,format=raw -net nic,model=pcnet -net user -soundhw sb16,pcspk $FDARGS
 
 : "$0" OK.
