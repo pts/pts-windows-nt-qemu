@@ -10,7 +10,7 @@ cd "${0%/*}"
 for NTD in "$@"; do
   mtools -c mcopy --version
   test -f "$NTD".img.bak || cp "$NTD".img "$NTD".img.bak
-  test -f "$NTD".bsb || dd if="$NTD".img skip=32318 bs=1 count=450 of="$NTD".bsb
+  test -f "$NTD".bsb || dd if="$NTD".img.bak skip=32318 bs=1 count=450 of="$NTD".bsb
   mkdir "$NTD".rec
   # 7z gets confused by WINNT being a file.
   # (cd "$NTD".rec && 7z x ../"$NTD".img.bak) || exit "$?"
