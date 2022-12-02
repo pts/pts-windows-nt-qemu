@@ -9,8 +9,13 @@ cd "${0%/*}"
 
 if test "$1" = format-floppy; then
   # Maximum floppy size for Windows NT 3.1 is 2880 KiB.
-  dd if=/dev/zero bs=81920 count=36 of=floppy.img
-  mtools -c mformat -i floppy.img -h 2 -s 36 -d 1 -t 80
+  # 2880 KiB also seems to work, but it copies invalid file content.
+  #dd if=/dev/zero bs=81920 count=36 of=floppy.img
+  #mtools -c mformat -i floppy.img -h 2 -s 36 -d 1 -t 80
+
+  # Maximum floppy size for Windows NT 3.1 is 1440 KiB.
+  dd if=/dev/zero bs=81920 count=18 of=floppy.img
+  mtools -c mformat -i floppy.img -h 2 -s 18 -d 1 -t 80
   exit
 fi
 
